@@ -1,0 +1,273 @@
+.game-preview-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.game-preview-content {
+  background: #1a1a1a;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  color: white;
+  overflow: hidden;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.game-preview-header {
+  position: sticky;
+  top: 0;
+  background: #1a1a1a;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  z-index: 10;
+}
+
+.game-preview-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #f5c518;
+}
+
+.close-preview {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.game-preview-body {
+  padding: 1.5rem;
+}
+
+.game-preview-image {
+  width: 100%;
+  height: 250px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.game-preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.game-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #ccc;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #222;
+  border-radius: 8px;
+  border-left: 4px solid #f5c518;
+}
+
+.game-stats {
+  margin-bottom: 2rem;
+  background: #222;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #333;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  color: #888;
+}
+
+.stat-value {
+  display: flex;
+  gap: 1rem;
+  font-weight: bold;
+}
+
+.gold-coins {
+  color: #f5c518;
+}
+
+.sweep-coins {
+  color: #00c853;
+}
+
+.game-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.game-tag {
+  background: #333;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 100px;
+  font-size: 0.875rem;
+  border: 1px solid #444;
+  transition: all 0.2s ease;
+}
+
+.game-tag:hover {
+  background: #444;
+  transform: translateY(-2px);
+}
+
+.game-features {
+  background: #222;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.game-features h3 {
+  color: #f5c518;
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+}
+
+.game-features ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.game-features li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.game-features li:last-child {
+  border-bottom: none;
+}
+
+.play-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.play-gold-btn, .play-sweep-btn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.play-gold-btn {
+  background: #f5c518;
+  color: #000;
+}
+
+.play-gold-btn:hover {
+  background: #ffd700;
+  transform: translateY(-2px);
+}
+
+.play-sweep-btn {
+  background: #00c853;
+  color: #fff;
+}
+
+.play-sweep-btn:hover {
+  background: #00e676;
+  transform: translateY(-2px);
+}
+
+.sweep-info {
+  font-size: 0.875rem;
+  font-weight: normal;
+  opacity: 0.9;
+}
+
+/* Custom Scrollbar */
+.game-preview-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.game-preview-content::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.game-preview-content::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+.game-preview-content::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .game-preview-modal {
+    padding: 1rem;
+  }
+
+  .game-preview-content {
+    width: 100%;
+  }
+
+  .game-preview-image {
+    height: 200px;
+  }
+
+  .game-description {
+    font-size: 1rem;
+    padding: 0.75rem;
+  }
+
+  .game-features {
+    padding: 1rem;
+  }
+
+  .game-tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+  }
+
+  .play-options {
+    gap: 0.75rem;
+  }
+
+  .play-gold-btn, .play-sweep-btn {
+    padding: 0.75rem;
+  }
+} 
