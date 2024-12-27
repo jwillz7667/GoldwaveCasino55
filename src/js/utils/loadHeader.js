@@ -1,7 +1,7 @@
 import headerHTML from '../../components/header.html';
 
 const loadHeader = () => {
-  return headerHTML;
+    return headerHTML;
 };
 
-export default loadHeader; 
+export default loadHeader;

@@ -1,7 +1,7 @@
 import footerHTML from '../../components/footer.html';
 
 const loadFooter = () => {
-  return footerHTML;
+    return footerHTML;
 };
 
-export default loadFooter; 
+export default loadFooter;

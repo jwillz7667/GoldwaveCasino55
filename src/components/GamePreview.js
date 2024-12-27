@@ -1,28 +1,28 @@
 export class GamePreview {
-  constructor(gameData) {
-    this.gameData = gameData;
-    this.modal = null;
-  }
-
-  show() {
-    this.createModal();
-    document.body.appendChild(this.modal);
-  }
-
-  hide() {
-    if (this.modal) {
-      this.modal.remove();
+    constructor(gameData) {
+        this.gameData = gameData;
+        this.modal = null;
     }
-  }
 
-  createModal() {
-    this.modal = document.createElement('div');
-    this.modal.className = 'game-preview-modal';
-    
-    const content = document.createElement('div');
-    content.className = 'game-preview-content';
-    
-    content.innerHTML = `
+    show() {
+        this.createModal();
+        document.body.appendChild(this.modal);
+    }
+
+    hide() {
+        if (this.modal) {
+            this.modal.remove();
+        }
+    }
+
+    createModal() {
+        this.modal = document.createElement('div');
+        this.modal.className = 'game-preview-modal';
+
+        const content = document.createElement('div');
+        content.className = 'game-preview-content';
+
+        content.innerHTML = `
       <div class="game-preview-header">
         <h2>${this.gameData.title}</h2>
         <button class="close-preview">&times;</button>
@@ -41,14 +41,18 @@ export class GamePreview {
           <div class="stat-row">
             <span class="stat-label">Gold Coins Bet Range</span>
             <div class="stat-value">
-              <span class="gold-coins">${this.formatNumber(this.gameData.minBetGold)} - ${this.formatNumber(this.gameData.maxBetGold)}</span>
+              <span class="gold-coins">${this.formatNumber(
+                  this.gameData.minBetGold
+              )} - ${this.formatNumber(this.gameData.maxBetGold)}</span>
             </div>
           </div>
           
           <div class="stat-row">
             <span class="stat-label">Sweep Coins Bet Range</span>
             <div class="stat-value">
-              <span class="sweep-coins">${this.gameData.minBetSweep.toFixed(2)} - ${this.gameData.maxBetSweep.toFixed(2)}</span>
+              <span class="sweep-coins">${this.gameData.minBetSweep.toFixed(
+                  2
+              )} - ${this.gameData.maxBetSweep.toFixed(2)}</span>
             </div>
           </div>
           
@@ -59,17 +63,21 @@ export class GamePreview {
         </div>
         
         <div class="game-tags">
-          ${this.gameData.tags.map(tag => `<span class="game-tag">${tag}</span>`).join('')}
+          ${this.gameData.tags.map((tag) => `<span class="game-tag">${tag}</span>`).join('')}
         </div>
         
-        ${this.gameData.features ? `
+        ${
+            this.gameData.features
+                ? `
           <div class="game-features">
             <h3>Game Features</h3>
             <ul>
-              ${this.gameData.features.map(feature => `<li>${feature}</li>`).join('')}
+              ${this.gameData.features.map((feature) => `<li>${feature}</li>`).join('')}
             </ul>
           </div>
-        ` : ''}
+        `
+                : ''
+        }
         
         <div class="play-options">
           <button class="play-gold-btn">
@@ -84,35 +92,35 @@ export class GamePreview {
         </div>
       </div>
     `;
-    
-    this.modal.appendChild(content);
-    this.addEventListeners(content);
-  }
 
-  addEventListeners(content) {
-    // Close button
-    content.querySelector('.close-preview').addEventListener('click', () => this.hide());
-    
-    // Close on background click
-    this.modal.addEventListener('click', (e) => {
-      if (e.target === this.modal) {
-        this.hide();
-      }
-    });
-    
-    // Play buttons
-    content.querySelector('.play-gold-btn').addEventListener('click', () => {
-      this.hide();
-      this.gameData.onPlay('gold');
-    });
-    
-    content.querySelector('.play-sweep-btn').addEventListener('click', () => {
-      this.hide();
-      this.gameData.onPlay('sweep');
-    });
-  }
+        this.modal.appendChild(content);
+        this.addEventListeners(content);
+    }
 
-  formatNumber(number) {
-    return new Intl.NumberFormat().format(number);
-  }
-} 
+    addEventListeners(content) {
+        // Close button
+        content.querySelector('.close-preview').addEventListener('click', () => this.hide());
+
+        // Close on background click
+        this.modal.addEventListener('click', (e) => {
+            if (e.target === this.modal) {
+                this.hide();
+            }
+        });
+
+        // Play buttons
+        content.querySelector('.play-gold-btn').addEventListener('click', () => {
+            this.hide();
+            this.gameData.onPlay('gold');
+        });
+
+        content.querySelector('.play-sweep-btn').addEventListener('click', () => {
+            this.hide();
+            this.gameData.onPlay('sweep');
+        });
+    }
+
+    formatNumber(number) {
+        return new Intl.NumberFormat().format(number);
+    }
+}

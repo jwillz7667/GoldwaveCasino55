@@ -1,54 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GoldWave Casino</title>
-</head>
-<body>
-  <!-- Header Component -->
-  <div id="header"></div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>GoldWave Casino</title>
+        <link rel="icon" type="image/png" href="images/goldwaveLOGO.png" />
+    </head>
+    <body>
+        <div class="app-container">
+            <!-- Side Menu -->
+            <aside class="side-menu">
+                <div class="casino-logo">
+                    <img
+                        src="images/goldwaveLOGO.png"
+                        alt="GoldWave Casino Logo"
+                        class="logo-image"
+                    />
+                </div>
 
-  <!-- Main Content -->
-  <div id="main-content">
-    <!-- Hero Banner -->
-    <div class="hero-banner">
-      <h1>Ride the Ultimate GoldWave Casino</h1>
-      <p class="banner-subtitle">Play and Win Big with Our Premium Games</p>
-      <button class="play-now-btn">Play Now</button>
-    </div>
+                <div class="balance-section">
+                    <div class="balance-info">
+                        <span class="coin-label">GC</span>
+                        <span class="coin-amount">125,157</span>
+                    </div>
+                    <div class="balance-buttons">
+                        <button class="get-coins-btn">Get Coins</button>
+                        <button class="redeem-btn">Redeem</button>
+                    </div>
+                </div>
 
-    <!-- Featured Games -->
-    <section class="featured-games">
-      <h2>Featured Games</h2>
-      <div class="games-grid">
-        <!-- Game Cards -->
-        <div class="game-card" data-game="slots">
-          <img src="https://via.placeholder.com/200x120" alt="Slots"/>
-          <h3>Slots</h3>
-        </div>
-        <div class="game-card" data-game="blackjack">
-          <img src="https://via.placeholder.com/200x120" alt="Blackjack"/>
-          <h3>Blackjack</h3>
-        </div>
-        <div class="game-card" data-game="roulette">
-          <img src="https://via.placeholder.com/200x120" alt="Roulette"/>
-          <h3>Roulette</h3>
-        </div>
-        <div class="game-card" data-game="poker">
-          <img src="https://via.placeholder.com/200x120" alt="Poker"/>
-          <h3>Poker</h3>
-        </div>
-      </div>
-    </section>
+                <div class="auth-buttons">
+                    <button class="login-btn">Login</button>
+                    <button class="signup-btn">Sign Up</button>
+                </div>
 
-    <!-- Game Container -->
-    <section id="game-container" class="game-container">
-      <!-- Games will be loaded here -->
-    </section>
-  </div>
+                <nav class="side-nav">
+                    <ul>
+                        <li>
+                            <a href="#" class="active"><i class="icon-lobby"></i>Lobby</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="icon-foryou"></i>For You</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="icon-casino"></i>Social Casino Games</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="icon-live"></i>Social Live Casino</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="icon-install"></i>Install app</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="icon-promotions"></i>Promotions</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="icon-notifications"></i>Notifications</a>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
 
-  <!-- Footer Component -->
-  <div id="footer"></div>
-</body>
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Top Navigation -->
+                <nav class="top-nav">
+                    <div class="nav-tabs">
+                        <a href="#" class="active">Lobby</a>
+                        <a href="#">For You</a>
+                        <a href="#">Popular</a>
+                        <a href="#">New & Exclusive</a>
+                        <a href="#">Spins & Wins</a>
+                        <a href="#">Jackpot Play</a>
+                        <a href="#">Hold and Win</a>
+                        <a href="#">Social Live Casino</a>
+                    </div>
+                </nav>
+
+                <!-- Game Categories -->
+                <section id="for-you-section" class="game-section">
+                    <div class="section-header">
+                        <h2>For You</h2>
+                        <div class="section-controls">
+                            <button class="nav-btn prev">←</button>
+                            <button class="nav-btn next">→</button>
+                            <a href="#" class="view-all">View all</a>
+                        </div>
+                    </div>
+
+                    <div class="games-grid">
+                        <!-- Game cards will be dynamically added here -->
+                    </div>
+                </section>
+
+                <!-- Game Container -->
+                <section id="game-container" class="game-container">
+                    <!-- Game will be dynamically loaded here -->
+                </section>
+
+                <!-- New & Exclusive Section -->
+                <section id="new-exclusive-section" class="game-section">
+                    <div class="section-header">
+                        <h2>New & Exclusive</h2>
+                        <div class="section-controls">
+                            <button class="nav-btn prev">←</button>
+                            <button class="nav-btn next">→</button>
+                            <a href="#" class="view-all">View all</a>
+                        </div>
+                    </div>
+
+                    <div class="games-grid">
+                        <!-- Game cards will be dynamically added here -->
+                    </div>
+                </section>
+
+                <!-- Auth Modals -->
+                <div id="login-modal" class="auth-modal">
+                    <div class="auth-modal-content">
+                        <h2>Login</h2>
+                        <form id="login-form">
+                            <input type="email" id="login-email" placeholder="Email" required />
+                            <input
+                                type="password"
+                                id="login-password"
+                                placeholder="Password"
+                                required
+                            />
+                            <button type="submit">Login</button>
+                        </form>
+                        <p>
+                            Don't have an account? <a href="#" id="switch-to-register">Register</a>
+                        </p>
+                        <button class="close-modal" id="close-login">&times;</button>
+                    </div>
+                </div>
+
+                <div id="register-modal" class="auth-modal">
+                    <div class="auth-modal-content">
+                        <h2>Register</h2>
+                        <form id="register-form">
+                            <input
+                                type="text"
+                                id="register-username"
+                                placeholder="Username"
+                                required
+                            />
+                            <input type="email" id="register-email" placeholder="Email" required />
+                            <input
+                                type="password"
+                                id="register-password"
+                                placeholder="Password"
+                                required
+                            />
+                            <input
+                                type="password"
+                                id="register-confirm-password"
+                                placeholder="Confirm Password"
+                                required
+                            />
+                            <button type="submit">Register</button>
+                        </form>
+                        <p>Already have an account? <a href="#" id="switch-to-login">Login</a></p>
+                        <button class="close-modal" id="close-register">&times;</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </body>
 </html>

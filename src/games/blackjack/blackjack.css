@@ -1,104 +1,104 @@
 .blackjack-table {
-  background: #2c7c2c;
-  padding: 2rem;
-  border-radius: 8px;
-  text-align: center;
-  color: white;
+    background: #2c7c2c;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    color: white;
 }
 
 .dealer-hand,
 .player-hand {
-  margin: 2rem 0;
+    margin: 2rem 0;
 }
 
 .cards {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1rem 0;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
 }
 
 .card {
-  width: 100px;
-  height: 140px;
-  background: white;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  font-weight: bold;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 100px;
+    height: 140px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .card.red {
-  color: red;
+    color: red;
 }
 
 .card.black {
-  color: black;
+    color: black;
 }
 
 .card.back {
-  background: #1a1a1a;
-  color: white;
+    background: #1a1a1a;
+    color: white;
 }
 
 .game-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem 0;
 }
 
 .bet-controls,
 .action-controls {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
 }
 
 #bet-amount {
-  padding: 0.5rem;
-  width: 100px;
-  background: #1a1a1a;
-  border: 1px solid #f5c518;
-  color: #fff;
-  border-radius: 4px;
+    padding: 0.5rem;
+    width: 100px;
+    background: #1a1a1a;
+    border: 1px solid #f5c518;
+    color: #fff;
+    border-radius: 4px;
 }
 
 button {
-  padding: 0.5rem 2rem;
-  background: #f5c518;
-  color: #000;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
+    padding: 0.5rem 2rem;
+    background: #f5c518;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
 }
 
 button:hover {
-  background: #ffd700;
+    background: #ffd700;
 }
 
 button:disabled {
-  background: #888;
-  cursor: not-allowed;
+    background: #888;
+    cursor: not-allowed;
 }
 
 .game-info {
-  margin-top: 2rem;
-  font-size: 1.1rem;
+    margin-top: 2rem;
+    font-size: 1.1rem;
 }
 
 .game-info p {
-  margin: 0.5rem 0;
+    margin: 0.5rem 0;
 }
 
 #game-message {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #f5c518;
-  min-height: 1.5em;
-} 
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #f5c518;
+    min-height: 1.5em;
+}

@@ -1,14 +1,13 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
-const bcrypt = require('bcryptjs');
 
 const db = new sqlite3.Database(path.join(__dirname, 'casino.db'));
 
 // Initialize database tables
 const initDatabase = () => {
-  db.serialize(() => {
-    // Users table
-    db.run(`
+    db.serialize(() => {
+        // Users table
+        db.run(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
@@ -19,8 +18,8 @@ const initDatabase = () => {
       )
     `);
 
-    // User profiles table
-    db.run(`
+        // User profiles table
+        db.run(`
       CREATE TABLE IF NOT EXISTS user_profiles (
         user_id INTEGER PRIMARY KEY,
         avatar_url TEXT,
@@ -31,8 +30,8 @@ const initDatabase = () => {
       )
     `);
 
-    // Transaction history
-    db.run(`
+        // Transaction history
+        db.run(`
       CREATE TABLE IF NOT EXISTS transactions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
@@ -43,9 +42,9 @@ const initDatabase = () => {
         FOREIGN KEY (user_id) REFERENCES users (id)
       )
     `);
-  });
+    });
 };
 
 initDatabase();
 
-module.exports = db; 
+module.exports = db;
