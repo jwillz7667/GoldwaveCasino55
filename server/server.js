@@ -1,80 +1,275 @@
 require('dotenv').config();
 const express = require('express');
-const { connectDB, createIndexes } = require('./config/database');
-const { configureServer, startServer } = require('./config/server');
-const logger = require('./utils/logger');
+const path = require('path');
+const bcrypt = require('bcrypt');
+const { Pool } = require('pg');
+const session = require('express-session');
 
-// Import routes
-const adminRoutes = require('./routes/adminRoutes');
-const userRoutes = require('./routes/userRoutes');
-const gameRoutes = require('./routes/gameRoutes');
-const transactionRoutes = require('./routes/transactionRoutes');
-
-// Import controllers
-const AdminController = require('./controllers/AdminController');
-const UserController = require('./controllers/UserController');
-
-// Import middleware
-const { authenticateAdmin, authenticateUser } = require('./middleware/auth');
-
-// Create Express app
 const app = express();
+const port = 3001;
 
-// Configure server
-configureServer(app);
-
-// API version prefix
-const API_PREFIX = `/api/${process.env.API_VERSION || 'v1'}`;
-
-// Public routes (no authentication required)
-app.post(`${API_PREFIX}/admin/login`, AdminController.login);
-app.post(`${API_PREFIX}/user/login`, UserController.login);
-app.post(`${API_PREFIX}/user/register`, UserController.register);
-
-// Protected routes
-app.use(`${API_PREFIX}/admin`, authenticateAdmin, adminRoutes);
-app.use(`${API_PREFIX}/user`, authenticateUser, userRoutes);
-app.use(`${API_PREFIX}/games`, gameRoutes);
-app.use(`${API_PREFIX}/transactions`, authenticateUser, transactionRoutes);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-    res.json({
-        status: 'healthy',
-        timestamp: new Date(),
-        environment: process.env.NODE_ENV,
-    });
+// Database configuration
+const pool = new Pool({
+    user: 'casino_admin',
+    host: 'localhost',
+    database: 'casino',
+    password: '6996',
+    port: 5432,
 });
 
-// Initialize server
-const initializeServer = async () => {
-    try {
-        // Connect to database
-        await connectDB();
+// Middleware
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '../dist')));
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false }
+}));
 
-        // Create database indexes
-        await createIndexes();
-
-        // Start server
-        const port = process.env.PORT || 3000;
-        const { server, monitoringServer } = await startServer(app, port);
-
-        // Export for testing
-        return { app, server, monitoringServer };
-    } catch (error) {
-        logger.error('Failed to initialize server:', error);
-        throw error;
+// Authentication middleware
+const requireAuth = (req, res, next) => {
+    if (req.session.userId) {
+        next();
+    } else {
+        res.status(401).json({ message: 'Unauthorized' });
     }
 };
 
-// Start server if not in test environment
-if (process.env.NODE_ENV !== 'test') {
-    initializeServer();
-}
+const requireAdmin = (req, res, next) => {
+    if (req.session.userRole === 'admin' || req.session.userRole === 'superadmin') {
+        next();
+    } else {
+        res.status(403).json({ message: 'Forbidden' });
+    }
+};
 
-process.on('unhandledRejection', (reason, promise) => {
-    logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    throw reason;
+// User Authentication Routes
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        
+        if (result.rows.length === 0) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const user = result.rows[0];
+        const validPassword = await bcrypt.compare(password, user.password);
+
+        if (!validPassword) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        req.session.userId = user.id;
+        req.session.userRole = user.role;
+        
+        res.json({
+            id: user.id,
+            username: user.username,
+            balance: user.balance,
+            role: user.role
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
 });
 
-module.exports = { initializeServer };
+app.post('/api/admin/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const result = await pool.query('SELECT * FROM admins WHERE username = $1', [username]);
+        
+        if (result.rows.length === 0) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const admin = result.rows[0];
+        const validPassword = await bcrypt.compare(password, admin.password);
+
+        if (!validPassword) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        req.session.userId = admin.id;
+        req.session.userRole = admin.role;
+        
+        res.json({
+            id: admin.id,
+            username: admin.username,
+            role: admin.role
+        });
+    } catch (error) {
+        console.error('Admin login error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+app.post('/api/logout', (req, res) => {
+    req.session.destroy();
+    res.json({ message: 'Logged out successfully' });
+});
+
+// User Management Routes
+app.get('/api/user/profile', requireAuth, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, username, balance, role FROM users WHERE id = $1', [req.session.userId]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Profile fetch error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+app.post('/api/admin/users', requireAdmin, async (req, res) => {
+    const { username, password, email, initialBalance = 0 } = req.body;
+    
+    console.log('Creating new user:', { username, email, initialBalance });
+    
+    try {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            console.log('Transaction started');
+            
+            // Check if username already exists
+            const existingUser = await client.query(
+                'SELECT username FROM users WHERE username = $1',
+                [username]
+            );
+            console.log('Existing user check:', existingUser.rows);
+            
+            if (existingUser.rows.length > 0) {
+                throw new Error('Username already exists');
+            }
+            
+            // If email is provided, check if it already exists
+            if (email) {
+                const existingEmail = await client.query(
+                    'SELECT email FROM users WHERE email = $1',
+                    [email]
+                );
+                console.log('Existing email check:', existingEmail.rows);
+                
+                if (existingEmail.rows.length > 0) {
+                    throw new Error('Email already exists');
+                }
+            }
+            
+            // Hash password
+            const hashedPassword = await bcrypt.hash(password, 10);
+            console.log('Password hashed');
+            
+            // Create user
+            const result = await client.query(
+                'INSERT INTO users (username, email, password, balance) VALUES ($1, $2, $3, $4) RETURNING *',
+                [username, email || null, hashedPassword, initialBalance]
+            );
+            console.log('User created:', result.rows[0]);
+            
+            // Record initial balance transaction if any
+            if (initialBalance > 0) {
+                const txn = await client.query(
+                    'INSERT INTO transactions (user_id, type, amount, admin_id) VALUES ($1, $2, $3, $4) RETURNING *',
+                    [result.rows[0].id, 'credit', initialBalance, req.session.userId]
+                );
+                console.log('Initial balance transaction created:', txn.rows[0]);
+            }
+            
+            await client.query('COMMIT');
+            console.log('Transaction committed');
+            
+            // Return more user details
+            res.json({
+                id: result.rows[0].id,
+                username: result.rows[0].username,
+                email: result.rows[0].email,
+                balance: result.rows[0].balance,
+                role: result.rows[0].role,
+                status: result.rows[0].status
+            });
+        } catch (error) {
+            await client.query('ROLLBACK');
+            console.error('Transaction rolled back:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        console.error('User creation error:', error);
+        res.status(400).json({ message: error.message });
+    }
+});
+
+// Game Routes
+app.get('/api/games', requireAuth, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM games WHERE active = true');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Games fetch error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Admin Routes
+app.get('/api/admin/check-auth', requireAdmin, (req, res) => {
+    res.json({ authenticated: true });
+});
+
+app.get('/api/admin/users', requireAdmin, async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT 
+                u.id, 
+                u.username, 
+                u.email, 
+                u.balance, 
+                u.role, 
+                u.status,
+                u.created_at,
+                COUNT(DISTINCT t.id) as transaction_count,
+                COALESCE(SUM(CASE WHEN t.type = 'win' THEN t.amount ELSE 0 END), 0) as total_winnings
+            FROM users u
+            LEFT JOIN transactions t ON u.id = t.user_id
+            GROUP BY u.id
+            ORDER BY u.created_at DESC
+        `);
+        
+        console.log('Fetched users:', result.rows);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Failed to fetch users' });
+    }
+});
+
+// Serve the appropriate HTML file based on the route
+app.get('/', (req, res) => {
+    if (req.session.userId && req.session.userRole === 'user') {
+        res.redirect('/casino');
+    } else {
+        res.sendFile(path.join(__dirname, '../dist/index.html'));
+    }
+});
+
+app.get('/casino', requireAuth, (req, res) => {
+    if (req.session.userRole === 'user') {
+        res.sendFile(path.join(__dirname, '../dist/casino.html'));
+    } else {
+        res.redirect('/');
+    }
+});
+
+app.get('/admin', requireAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist/admin/index.html'));
+});
+
+// Start server
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});

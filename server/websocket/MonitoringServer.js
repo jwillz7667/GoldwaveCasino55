@@ -9,6 +9,7 @@ class MonitoringServer {
         this.wss = new WebSocket.Server({
             server,
             clientTracking: true,
+            path: '/ws',
             verifyClient: (info, cb) => {
                 if (process.env.NODE_ENV === 'production' && !info.secure) {
                     cb(false, 4000, 'SSL Required');
@@ -35,10 +36,14 @@ class MonitoringServer {
                     return;
                 }
 
-                const authResult = await this.authenticateConnection(req);
-                if (!authResult) {
-                    ws.close(4001, 'Authentication failed');
-                    return;
+                // Skip authentication in development
+                let authResult = { admin: { _id: 'dev' } };
+                if (process.env.NODE_ENV === 'production') {
+                    authResult = await this.authenticateConnection(req);
+                    if (!authResult) {
+                        ws.close(4001, 'Authentication failed');
+                        return;
+                    }
                 }
 
                 const { admin } = authResult;
@@ -60,6 +65,15 @@ class MonitoringServer {
                     if (client) {
                         client.lastActivity = Date.now();
                     }
+                });
+
+                ws.on('error', (error) => {
+                    logger.error('WebSocket error:', {
+                        error: error.message,
+                        adminId: admin._id,
+                        sessionId,
+                    });
+                    // Don't close the connection, let the client retry
                 });
 
                 ws.on('message', async (message) => {
@@ -115,6 +129,11 @@ class MonitoringServer {
                 });
                 ws.close(4000, 'Internal server error');
             }
+        });
+
+        // Handle server errors
+        this.wss.on('error', (error) => {
+            logger.error('WebSocket server error:', error);
         });
 
         setInterval(() => {

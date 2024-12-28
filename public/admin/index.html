@@ -3,350 +3,329 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Admin Dashboard - Casino Management System</title>
-        <link rel="stylesheet" href="../css/admin.css" />
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+        <title>Admin Dashboard - Goldwave Casino</title>
+        <link rel="stylesheet" href="/css/admin.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
-    <body>
-        <div class="dashboard">
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <div class="sidebar-header">
-                    <img src="../images/logo.png" alt="Casino Logo" class="sidebar-logo" />
-                    <h2>Admin Panel</h2>
-                </div>
+    <body class="admin-dashboard">
+        <nav class="admin-nav">
+            <div class="nav-brand">
+                <img src="/images/goldwaveLOGO.png" alt="Goldwave Casino" class="nav-logo">
+                <span>Admin Dashboard</span>
+            </div>
+            <div class="nav-menu">
+                <button id="menuToggle" class="menu-toggle">☰</button>
+            </div>
+        </nav>
 
-                <nav class="nav-menu">
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <div class="admin-info">
+                    <img src="/images/admin-avatar.png" alt="Admin" class="admin-avatar">
+                    <span id="adminName">Admin Name</span>
+                </div>
+                <nav class="sidebar-nav">
                     <ul>
-                        <li class="nav-item">
-                            <a href="#dashboard" class="nav-link active">
-                                <i class="material-icons">dashboard</i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#users" class="nav-link">
-                                <i class="material-icons">people</i>
-                                <span>User Management</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#games" class="nav-link">
-                                <i class="material-icons">casino</i>
-                                <span>Game Management</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#transactions" class="nav-link">
-                                <i class="material-icons">account_balance_wallet</i>
-                                <span>Transactions</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#analytics" class="nav-link">
-                                <i class="material-icons">analytics</i>
-                                <span>Analytics</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#monitoring" class="nav-link">
-                                <i class="material-icons">monitor_heart</i>
-                                <span>Real-time Monitoring</span>
-                            </a>
-                        </li>
+                        <li><a href="#overview" class="active">Overview</a></li>
+                        <li><a href="#users">User Management</a></li>
+                        <li><a href="#games">Game Management</a></li>
+                        <li><a href="#transactions">Transactions</a></li>
+                        <li><a href="#reports">Reports</a></li>
+                        <li><a href="#settings">Settings</a></li>
+                        <li data-requires="canManageVendors"><a href="#vendor-management">Vendor Management</a></li>
                     </ul>
                 </nav>
             </aside>
 
-            <!-- Main Content -->
             <main class="main-content">
-                <!-- Dashboard Section -->
-                <section id="dashboard" class="dashboard-section">
-                    <h1>Dashboard Overview</h1>
-
+                <div id="overview" class="dashboard-section active">
+                    <h2>Overview</h2>
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <h3>Total Users</h3>
-                            <div class="value" id="totalUsers">0</div>
+                            <h3>Active Users</h3>
+                            <p id="activeUsers">Loading...</p>
                         </div>
                         <div class="stat-card">
-                            <h3>Active Sessions</h3>
-                            <div class="value" id="activeSessions">0</div>
+                            <h3>Today's Revenue</h3>
+                            <p id="todayRevenue">Loading...</p>
                         </div>
                         <div class="stat-card">
-                            <h3>Total Revenue</h3>
-                            <div class="value" id="totalRevenue">$0</div>
+                            <h3>Active Games</h3>
+                            <p id="activeGames">Loading...</p>
                         </div>
                         <div class="stat-card">
-                            <h3>Today's Transactions</h3>
-                            <div class="value" id="todayTransactions">0</div>
+                            <h3>Pending Transactions</h3>
+                            <p id="pendingTransactions">Loading...</p>
                         </div>
                     </div>
-
-                    <div class="data-table">
-                        <h2>Recent Activities</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Time</th>
-                                    <th>User</th>
-                                    <th>Activity</th>
-                                    <th>Details</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recentActivities">
-                                <!-- Activities will be populated dynamically -->
-                            </tbody>
-                        </table>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
                     </div>
-                </section>
+                </div>
 
-                <!-- User Management Section -->
-                <section id="users" class="section" style="display: none">
-                    <h1>User Management</h1>
-
+                <div id="users" class="dashboard-section">
+                    <h2>User Management</h2>
                     <div class="actions-bar">
-                        <button class="btn btn-primary" onclick="openCreateUserModal()">
-                            <i class="material-icons">person_add</i>
-                            Create User
-                        </button>
-                        <div class="search-box">
-                            <input type="text" placeholder="Search users..." />
-                            <button class="btn btn-secondary">
-                                <i class="material-icons">search</i>
-                            </button>
-                        </div>
+                        <input type="text" id="userSearch" placeholder="Search users...">
+                        <button class="btn-primary" id="addUser">Add New User</button>
+                        <button class="btn-secondary" id="exportUsers">Export Users</button>
                     </div>
-
-                    <div class="data-table">
-                        <table>
+                    <div class="table-container">
+                        <table id="usersTable">
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>Username</th>
-                                    <th>Status</th>
+                                    <th>Email</th>
                                     <th>Balance</th>
-                                    <th>Last Login</th>
+                                    <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="usersList">
-                                <!-- Users will be populated dynamically -->
+                            <tbody>
+                                <!-- Populated by JavaScript -->
                             </tbody>
                         </table>
                     </div>
-                </section>
+                </div>
 
-                <!-- Game Management Section -->
-                <section id="games" class="section" style="display: none">
-                    <h1>Game Management</h1>
-
+                <div id="vendor-management" class="dashboard-section">
+                    <h2>Vendor Management</h2>
                     <div class="actions-bar">
-                        <button class="btn btn-primary" onclick="openAddGameModal()">
-                            <i class="material-icons">add_circle</i>
-                            Add Game
-                        </button>
+                        <button class="btn-primary" id="addVendor" onclick="showModal('vendorModal')">Add New Vendor</button>
                     </div>
-
-                    <div class="data-table">
-                        <table>
+                    <div class="table-container">
+                        <table id="vendorsTable">
                             <thead>
                                 <tr>
-                                    <th>Game</th>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Created Date</th>
                                     <th>Status</th>
-                                    <th>Players</th>
-                                    <th>Revenue</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="gamesList">
-                                <!-- Games will be populated dynamically -->
+                            <tbody>
+                                <!-- Populated by JavaScript -->
                             </tbody>
                         </table>
                     </div>
-                </section>
+                </div>
 
-                <!-- Transactions Section -->
-                <section id="transactions" class="section" style="display: none">
-                    <h1>Transaction History</h1>
+                <div id="games" class="dashboard-section">
+                    <h2>Game Management</h2>
+                    <div class="actions-bar">
+                        <button class="btn-primary" id="addGame">Add New Game</button>
+                    </div>
+                    <div class="games-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
 
-                    <div class="filters">
+                <div id="transactions" class="dashboard-section">
+                    <h2>Transactions</h2>
+                    <div class="actions-bar">
+                        <input type="text" id="transactionSearch" placeholder="Search transactions...">
                         <select id="transactionType">
-                            <option value="all">All Transactions</option>
+                            <option value="all">All Types</option>
                             <option value="deposit">Deposits</option>
                             <option value="withdrawal">Withdrawals</option>
                             <option value="bet">Bets</option>
                             <option value="win">Wins</option>
                         </select>
-                        <input type="date" id="startDate" />
-                        <input type="date" id="endDate" />
-                        <button class="btn btn-secondary" onclick="filterTransactions()">
-                            Apply Filters
-                        </button>
+                        <button class="btn-primary" id="exportTransactions">Export</button>
                     </div>
-
-                    <div class="data-table">
-                        <table>
+                    <div class="table-container">
+                        <table id="transactionsTable">
                             <thead>
                                 <tr>
-                                    <th>Time</th>
+                                    <th>ID</th>
                                     <th>User</th>
                                     <th>Type</th>
                                     <th>Amount</th>
                                     <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="transactionsList">
-                                <!-- Transactions will be populated dynamically -->
+                            <tbody>
+                                <!-- Populated by JavaScript -->
                             </tbody>
                         </table>
                     </div>
-                </section>
+                </div>
 
-                <!-- Analytics Section -->
-                <section id="analytics" class="section" style="display: none">
-                    <h1>Analytics</h1>
-
-                    <div class="chart-grid">
-                        <div class="chart-card">
-                            <h3>Revenue Overview</h3>
-                            <canvas id="revenueChart"></canvas>
+                <div id="reports" class="dashboard-section">
+                    <h2>Reports</h2>
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <h3>Revenue Report</h3>
+                            <p>View detailed revenue analytics</p>
+                            <button class="btn-secondary">Generate</button>
                         </div>
-                        <div class="chart-card">
+                        <div class="report-card">
                             <h3>User Activity</h3>
-                            <canvas id="userActivityChart"></canvas>
+                            <p>Analyze user engagement</p>
+                            <button class="btn-secondary">Generate</button>
                         </div>
-                        <div class="chart-card">
+                        <div class="report-card">
                             <h3>Game Performance</h3>
-                            <canvas id="gamePerformanceChart"></canvas>
+                            <p>Track game metrics</p>
+                            <button class="btn-secondary">Generate</button>
                         </div>
-                        <div class="chart-card">
-                            <h3>Transaction Volume</h3>
-                            <canvas id="transactionVolumeChart"></canvas>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Real-time Monitoring Section -->
-                <section id="monitoring" class="section" style="display: none">
-                    <h1>Real-time Monitoring</h1>
-
-                    <div class="monitoring-grid">
-                        <div class="monitoring-card">
-                            <h3>Active Users</h3>
-                            <div class="real-time-chart">
-                                <canvas id="activeUsersChart"></canvas>
-                            </div>
-                            <div class="active-users-list" id="activeUsersList">
-                                <!-- Active users will be populated dynamically -->
-                            </div>
-                        </div>
-
-                        <div class="monitoring-card">
-                            <h3>Live Games</h3>
-                            <div class="live-games-list" id="liveGamesList">
-                                <!-- Live games will be populated dynamically -->
-                            </div>
-                        </div>
-
-                        <div class="monitoring-card">
-                            <h3>System Status</h3>
-                            <div class="system-metrics" id="systemMetrics">
-                                <!-- System metrics will be populated dynamically -->
-                            </div>
+                        <div class="report-card">
+                            <h3>Financial Summary</h3>
+                            <p>View financial statements</p>
+                            <button class="btn-secondary">Generate</button>
                         </div>
                     </div>
-                </section>
+                </div>
+
+                <div id="settings" class="dashboard-section">
+                    <h2>Settings</h2>
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <h3>General Settings</h3>
+                            <form id="generalSettingsForm">
+                                <div class="form-group">
+                                    <label>Site Maintenance Mode</label>
+                                    <input type="checkbox" id="maintenanceMode">
+                                </div>
+                                <div class="form-group">
+                                    <label>Max Concurrent Users</label>
+                                    <input type="number" id="maxUsers">
+                                </div>
+                                <button type="submit" class="btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                        <div class="settings-card">
+                            <h3>Security Settings</h3>
+                            <form id="securitySettingsForm">
+                                <div class="form-group">
+                                    <label>Require 2FA for Admins</label>
+                                    <input type="checkbox" id="require2FA">
+                                </div>
+                                <div class="form-group">
+                                    <label>Session Timeout (minutes)</label>
+                                    <input type="number" id="sessionTimeout">
+                                </div>
+                                <button type="submit" class="btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
 
         <!-- Modals -->
-        <!-- Create User Modal -->
-        <div id="createUserModal" class="modal">
+        <div id="userModal" class="modal">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Create New User</h2>
-                    <button class="close-modal" onclick="closeModal('createUserModal')">
-                        &times;
-                    </button>
-                </div>
-                <form id="createUserForm">
-                    <div class="form-row">
-                        <div class="form-field">
-                            <label for="newUsername">Username</label>
-                            <input type="text" id="newUsername" required />
-                        </div>
-                        <div class="form-field">
-                            <label for="initialBalance">Initial Balance</label>
-                            <input type="number" id="initialBalance" min="0" step="0.01" required />
-                        </div>
+                <h2>Add New User</h2>
+                <form id="editUserForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
                     </div>
-                    <div class="form-field">
-                        <label for="userNotes">Notes</label>
-                        <textarea id="userNotes" rows="3"></textarea>
+                    <div class="form-group">
+                        <label for="email">Email (Optional)</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="initialBalance">Initial Balance</label>
+                        <input type="number" id="initialBalance" name="initialBalance" min="0" step="0.01" value="0">
                     </div>
                     <div class="form-actions">
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            onclick="closeModal('createUserModal')"
-                        >
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary">Create User</button>
+                        <button type="submit" class="btn-primary">Create User</button>
+                        <button type="button" class="btn-secondary" onclick="hideModal('userModal')">Cancel</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Add Game Modal -->
-        <div id="addGameModal" class="modal">
+        <div id="gameModal" class="modal">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Add New Game</h2>
-                    <button class="close-modal" onclick="closeModal('addGameModal')">
-                        &times;
-                    </button>
-                </div>
-                <form id="addGameForm">
-                    <div class="form-row">
-                        <div class="form-field">
-                            <label for="gameName">Game Name</label>
-                            <input type="text" id="gameName" required />
-                        </div>
-                        <div class="form-field">
-                            <label for="gameType">Game Type</label>
-                            <select id="gameType" required>
-                                <option value="slot">Slot Machine</option>
-                                <option value="table">Table Game</option>
-                                <option value="card">Card Game</option>
-                            </select>
-                        </div>
+                <h2>Add/Edit Game</h2>
+                <form id="editGameForm">
+                    <!-- Populated by JavaScript -->
+                </form>
+            </div>
+        </div>
+
+        <div id="vendorModal" class="modal">
+            <div class="modal-content">
+                <h2>Add/Edit Vendor</h2>
+                <form id="vendorForm">
+                    <div class="form-group">
+                        <label for="vendorUsername">Username</label>
+                        <input type="text" id="vendorUsername" name="username" required>
                     </div>
-                    <div class="form-field">
-                        <label for="gameDescription">Description</label>
-                        <textarea id="gameDescription" rows="3"></textarea>
+                    <div class="form-group">
+                        <label for="vendorEmail">Email</label>
+                        <input type="email" id="vendorEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vendorPassword">Password</label>
+                        <input type="password" id="vendorPassword" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="vendorStatus">Status</label>
+                        <select id="vendorStatus" name="status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Permissions</label>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" name="permissions" value="manageUsers" checked disabled>
+                                Manage Users
+                            </label>
+                            <label>
+                                <input type="checkbox" name="permissions" value="manageTokens" checked disabled>
+                                Manage Tokens
+                            </label>
+                            <label>
+                                <input type="checkbox" name="permissions" value="viewReports" checked disabled>
+                                View Reports
+                            </label>
+                        </div>
                     </div>
                     <div class="form-actions">
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            onclick="closeModal('addGameModal')"
-                        >
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn btn-primary">Add Game</button>
+                        <button type="submit" class="btn-primary">Save Vendor</button>
+                        <button type="button" class="btn-secondary" onclick="hideModal('vendorModal')">Cancel</button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Scripts -->
+        <!-- Add Token Management Modal -->
+        <div id="tokenModal" class="modal">
+            <div class="modal-content">
+                <h2>Manage User Tokens</h2>
+                <form id="tokenForm">
+                    <input type="hidden" id="tokenUserId" name="userId">
+                    <div class="form-group">
+                        <label for="tokenAmount">Amount</label>
+                        <input type="number" id="tokenAmount" name="amount" min="1" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Action</label>
+                        <div class="button-group">
+                            <button type="button" class="btn-primary" onclick="handleTokenAction('add')">Add Tokens</button>
+                            <button type="button" class="btn-secondary" onclick="handleTokenAction('subtract')">Subtract Tokens</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="../js/admin/dashboard.js"></script>
-        <script src="../js/admin/users.js"></script>
-        <script src="../js/admin/games.js"></script>
-        <script src="../js/admin/transactions.js"></script>
-        <script src="../js/admin/analytics.js"></script>
-        <script src="../js/admin/monitoring.js"></script>
+        <script src="/js/admin.js"></script>
     </body>
 </html>

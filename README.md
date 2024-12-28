@@ -1,131 +1,116 @@
-# Goldwave Casino
+# Casino Platform
 
-A modern web-based casino application featuring various games including slots and blackjack. Built with JavaScript and modern web technologies.
+A full-featured online casino platform with user management, game integration, and administrative capabilities.
 
 ## Features
 
--   🎰 Modern Slot Machine
+### User Features
+- User registration and authentication
+- Balance management
+- Game access and play
+- Transaction history
+- Real-time balance updates
 
-    -   Multiple paylines
-    -   Wild symbols, scatter symbols, and bonus rounds
-    -   Free spins feature
-    -   Dynamic win animations
-    -   Configurable bet amounts ($0.20 - $5.00)
-    -   Auto-spin functionality
+### Admin Features
+- Secure admin dashboard
+- User management (create, view, update status)
+- Game management
+- Transaction monitoring
+- Revenue reporting
+- User activity tracking
 
--   🎮 Responsive Design
-    -   Works on desktop and mobile devices
-    -   Smooth animations and transitions
-    -   Modern UI/UX
+### Technical Features
+- Secure authentication system
+- PostgreSQL database integration
+- Real-time updates
+- Responsive design
+- Session management
 
-## Getting Started
+## Prerequisites
 
-### Prerequisites
+- Node.js (v14 or higher)
+- PostgreSQL (v12 or higher)
+- npm or yarn
 
--   Node.js (v14 or higher)
--   npm (v6 or higher)
--   MongoDB (v4.4 or higher)
--   Redis (v6 or higher)
-
-### Installation
+## Installation
 
 1. Clone the repository:
-
-    ```bash
-    git clone https://github.com/jwillz7667/GoldwaveCasino55.git
-    cd GoldwaveCasino55
-    ```
+```bash
+git clone [repository-url]
+cd casino
+```
 
 2. Install dependencies:
-
-    ```bash
-    npm install
-    ```
-
-3. Set up environment variables:
-    ```bash
-    cp .env.example .env
-    ```
-    Edit `.env` file and update the following configurations:
-    - MongoDB connection settings
-    - Redis connection settings
-    - JWT secrets
-    - Email configuration (if needed)
-    - External service API keys (if needed)
-
-4. Start MongoDB and Redis:
-    ```bash
-    # Start MongoDB (using brew services on macOS)
-    brew services start mongodb-community
-    
-    # Start Redis (using brew services on macOS)
-    brew services start redis
-    ```
-
-5. Start the development server:
-
-    ```bash
-    npm run dev
-    ```
-
-6. Open your browser and navigate to:
-    ```
-    http://localhost:3000
-    ```
-
-### API Documentation
-
-When `ENABLE_SWAGGER=true` in your `.env`, you can access the API documentation at:
-```
-http://localhost:3000/api-docs
-```
-
-### Building for Production
-
-To create a production build:
-
 ```bash
-npm run build
+npm install
 ```
 
-The built files will be in the `dist` directory.
+3. Set up the database:
+```bash
+# Create database and user
+psql postgres
+CREATE USER casino_admin WITH PASSWORD '6996';
+CREATE DATABASE casino;
+GRANT ALL PRIVILEGES ON DATABASE casino TO casino_admin;
 
-## Game Rules
+# Initialize database schema
+psql -U casino_admin -d casino -f scripts/init-db.sql
+```
 
-### Slot Machine
+4. Create a superadmin account:
+```bash
+node scripts/setup-admin.js
+```
 
--   Minimum bet: $0.20
--   Maximum bet: $5.00
--   Wild symbol (🃏) substitutes for any symbol except Scatter and Bonus
--   3 or more Scatter symbols (⭐) award 10 free spins
--   3 or more Bonus symbols (🎁) trigger the bonus round
--   Multiple paylines available for more winning combinations
+## Development
 
-## Technologies Used
+Start the development server:
+```bash
+npm run dev
+```
 
--   JavaScript (ES6+)
--   Node.js & Express
--   MongoDB
--   Redis
--   JWT Authentication
--   WebSocket for real-time features
--   Webpack
--   CSS3 with Animations
--   HTML5
+This will start:
+- Backend server on port 3001
+- Frontend development server on port 8080
 
-## Contributing
+## Usage
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### User Interface
+- Access the main casino interface at: `http://localhost:8080`
+- Login with your user credentials
+- Browse and play available games
+- View transaction history and balance
+
+### Admin Interface
+- Access the admin dashboard at: `http://localhost:8080/admin`
+- Login with superadmin credentials:
+  - Username: superadmin
+  - Password: goldwave123!
+- Manage users, games, and view reports
+
+## Project Structure
+
+```
+casino/
+├── server/           # Backend server code
+├── src/              # Frontend source code
+│   ├── js/          # JavaScript files
+│   ├── css/         # Stylesheets
+│   └── assets/      # Static assets
+├── public/          # Static files
+├── dist/            # Built files
+├── scripts/         # Database and setup scripts
+└── webpack.config.js # Webpack configuration
+```
+
+## Security Notes
+
+- Change the superadmin password immediately after first login
+- Keep the database credentials secure
+- Regular security audits recommended
+- Session management implemented
+- Password hashing using bcrypt
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
--   Inspired by modern casino games
--   Built with love for gaming enthusiasts
+[Your License]

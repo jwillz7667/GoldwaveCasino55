@@ -3,168 +3,25 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>GoldWave Casino</title>
-        <link rel="icon" type="image/png" href="images/goldwaveLOGO.png" />
+        <title>GoldWave Casino - Login</title>
+        <link rel="stylesheet" href="css/main.css">
     </head>
-    <body>
-        <div class="app-container">
-            <!-- Side Menu -->
-            <aside class="side-menu">
-                <div class="casino-logo">
-                    <img
-                        src="images/goldwaveLOGO.png"
-                        alt="GoldWave Casino Logo"
-                        class="logo-image"
-                    />
-                </div>
-
-                <div class="balance-section">
-                    <div class="balance-info">
-                        <span class="coin-label">GC</span>
-                        <span class="coin-amount">125,157</span>
+    <body class="login-page">
+        <div class="login-container">
+            <div class="login-box">
+                <img src="images/GoldwaveLOGO.png" alt="GoldWave Casino" class="login-logo">
+                <form id="loginForm" class="login-form">
+                    <div class="form-group">
+                        <input type="text" id="username" name="username" placeholder="Username" required>
                     </div>
-                    <div class="balance-buttons">
-                        <button class="get-coins-btn">Get Coins</button>
-                        <button class="redeem-btn">Redeem</button>
+                    <div class="form-group">
+                        <input type="password" id="password" name="password" placeholder="Password" required>
                     </div>
-                </div>
-
-                <div class="auth-buttons">
-                    <button class="login-btn">Login</button>
-                    <button class="signup-btn">Sign Up</button>
-                </div>
-
-                <nav class="side-nav">
-                    <ul>
-                        <li>
-                            <a href="#" class="active"><i class="icon-lobby"></i>Lobby</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="icon-foryou"></i>For You</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="icon-casino"></i>Social Casino Games</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="icon-live"></i>Social Live Casino</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="icon-install"></i>Install app</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="icon-promotions"></i>Promotions</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="icon-notifications"></i>Notifications</a>
-                        </li>
-                    </ul>
-                </nav>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="main-content">
-                <!-- Top Navigation -->
-                <nav class="top-nav">
-                    <div class="nav-tabs">
-                        <a href="#" class="active">Lobby</a>
-                        <a href="#">For You</a>
-                        <a href="#">Popular</a>
-                        <a href="#">New & Exclusive</a>
-                        <a href="#">Spins & Wins</a>
-                        <a href="#">Jackpot Play</a>
-                        <a href="#">Hold and Win</a>
-                        <a href="#">Social Live Casino</a>
-                    </div>
-                </nav>
-
-                <!-- Game Categories -->
-                <section id="for-you-section" class="game-section">
-                    <div class="section-header">
-                        <h2>For You</h2>
-                        <div class="section-controls">
-                            <button class="nav-btn prev">←</button>
-                            <button class="nav-btn next">→</button>
-                            <a href="#" class="view-all">View all</a>
-                        </div>
-                    </div>
-
-                    <div class="games-grid">
-                        <!-- Game cards will be dynamically added here -->
-                    </div>
-                </section>
-
-                <!-- Game Container -->
-                <section id="game-container" class="game-container">
-                    <!-- Game will be dynamically loaded here -->
-                </section>
-
-                <!-- New & Exclusive Section -->
-                <section id="new-exclusive-section" class="game-section">
-                    <div class="section-header">
-                        <h2>New & Exclusive</h2>
-                        <div class="section-controls">
-                            <button class="nav-btn prev">←</button>
-                            <button class="nav-btn next">→</button>
-                            <a href="#" class="view-all">View all</a>
-                        </div>
-                    </div>
-
-                    <div class="games-grid">
-                        <!-- Game cards will be dynamically added here -->
-                    </div>
-                </section>
-
-                <!-- Auth Modals -->
-                <div id="login-modal" class="auth-modal">
-                    <div class="auth-modal-content">
-                        <h2>Login</h2>
-                        <form id="login-form">
-                            <input type="email" id="login-email" placeholder="Email" required />
-                            <input
-                                type="password"
-                                id="login-password"
-                                placeholder="Password"
-                                required
-                            />
-                            <button type="submit">Login</button>
-                        </form>
-                        <p>
-                            Don't have an account? <a href="#" id="switch-to-register">Register</a>
-                        </p>
-                        <button class="close-modal" id="close-login">&times;</button>
-                    </div>
-                </div>
-
-                <div id="register-modal" class="auth-modal">
-                    <div class="auth-modal-content">
-                        <h2>Register</h2>
-                        <form id="register-form">
-                            <input
-                                type="text"
-                                id="register-username"
-                                placeholder="Username"
-                                required
-                            />
-                            <input type="email" id="register-email" placeholder="Email" required />
-                            <input
-                                type="password"
-                                id="register-password"
-                                placeholder="Password"
-                                required
-                            />
-                            <input
-                                type="password"
-                                id="register-confirm-password"
-                                placeholder="Confirm Password"
-                                required
-                            />
-                            <button type="submit">Register</button>
-                        </form>
-                        <p>Already have an account? <a href="#" id="switch-to-login">Login</a></p>
-                        <button class="close-modal" id="close-register">&times;</button>
-                    </div>
-                </div>
-            </main>
+                    <div id="errorMessage" class="error-message"></div>
+                    <button type="submit" class="login-button">Login</button>
+                </form>
+            </div>
         </div>
+        <script src="js/main.bundle.js"></script>
     </body>
 </html>

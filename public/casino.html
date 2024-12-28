@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoldWave Casino</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Side Menu -->
+        <aside class="side-menu">
+            <div class="casino-logo">
+                <img src="images/GoldwaveLOGO.png" alt="GoldWave Casino Logo" class="logo-image">
+            </div>
+
+            <div class="balance-section">
+                <div class="balance-info">
+                    <span class="coin-label">GC</span>
+                    <span class="coin-amount">0</span>
+                </div>
+                <div class="balance-buttons">
+                    <button class="get-coins-btn">Get Coins</button>
+                    <button class="redeem-btn">Redeem</button>
+                </div>
+            </div>
+
+            <nav class="side-nav">
+                <ul>
+                    <li><a href="#" class="active"><i class="icon-lobby"></i>Lobby</a></li>
+                    <li><a href="#"><i class="icon-foryou"></i>For You</a></li>
+                    <li><a href="#"><i class="icon-casino"></i>Social Casino Games</a></li>
+                    <li><a href="#"><i class="icon-live"></i>Social Live Casino</a></li>
+                    <li><a href="#"><i class="icon-promotions"></i>Promotions</a></li>
+                </ul>
+            </nav>
+
+            <div class="user-profile">
+                <span class="username" id="userDisplayName"></span>
+                <button class="logout-btn">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navigation -->
+            <nav class="top-nav">
+                <div class="nav-tabs">
+                    <a href="#" class="active">Lobby</a>
+                    <a href="#">For You</a>
+                    <a href="#">Popular</a>
+                    <a href="#">New & Exclusive</a>
+                    <a href="#">Spins & Wins</a>
+                    <a href="#">Jackpot Play</a>
+                    <a href="#">Hold and Win</a>
+                </div>
+            </nav>
+
+            <!-- Game Categories -->
+            <section id="for-you-section" class="game-section">
+                <div class="section-header">
+                    <h2>For You</h2>
+                    <div class="section-controls">
+                        <button class="nav-btn prev">←</button>
+                        <button class="nav-btn next">→</button>
+                        <a href="#" class="view-all">View all</a>
+                    </div>
+                </div>
+
+                <div class="games-grid">
+                    <!-- Games will be dynamically added here -->
+                </div>
+            </section>
+
+            <!-- Game Container -->
+            <section id="game-container" class="game-container">
+                <!-- Active game will be loaded here -->
+            </section>
+        </main>
+    </div>
+
+    <!-- Get Coins Modal -->
+    <div id="getCoinsModal" class="modal">
+        <div class="modal-content">
+            <h2>Get More Coins</h2>
+            <div class="coin-packages">
+                <div class="coin-package">
+                    <h3>1,000 Coins</h3>
+                    <p>$0.99</p>
+                    <button class="buy-coins-btn" data-amount="1000">Buy Now</button>
+                </div>
+                <div class="coin-package">
+                    <h3>5,000 Coins</h3>
+                    <p>$4.99</p>
+                    <button class="buy-coins-btn" data-amount="5000">Buy Now</button>
+                </div>
+                <div class="coin-package featured">
+                    <h3>10,000 Coins</h3>
+                    <p>$9.99</p>
+                    <span class="best-value">Best Value!</span>
+                    <button class="buy-coins-btn" data-amount="10000">Buy Now</button>
+                </div>
+            </div>
+            <button class="close-modal">&times;</button>
+        </div>
+    </div>
+
+    <script src="js/main.bundle.js"></script>
+</body>
+</html> 

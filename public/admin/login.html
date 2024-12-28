@@ -3,80 +3,29 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Admin Login - Casino Management System</title>
-        <link rel="stylesheet" href="../css/admin.css" />
+        <title>Admin Login - Goldwave Casino</title>
+        <link rel="stylesheet" href="/css/admin.css" />
     </head>
     <body class="login-page">
         <div class="login-container">
             <div class="login-box">
                 <div class="login-header">
-                    <img src="../images/logo.png" alt="Casino Logo" class="login-logo" />
-                    <h1>Admin Dashboard</h1>
+                    <img src="/images/GoldwaveLOGO.png" alt="Goldwave Casino Logo" class="login-logo">
+                    <h1>Admin Login</h1>
                 </div>
-
                 <form id="loginForm" class="login-form">
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input type="text" id="username" name="username" required />
                     </div>
-
                     <div class="form-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" required />
                     </div>
-
-                    <div class="form-group">
-                        <label for="twoFactorCode">2FA Code</label>
-                        <input type="text" id="twoFactorCode" name="twoFactorCode" required />
-                    </div>
-
-                    <div class="form-group">
-                        <button type="submit" class="login-button">Login</button>
-                    </div>
-
-                    <div id="errorMessage" class="error-message"></div>
+                    <div class="error-message" id="errorMessage"></div>
+                    <button type="submit" class="login-button">Login</button>
                 </form>
             </div>
         </div>
-
-        <script>
-            document.getElementById('loginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                const twoFactorCode = document.getElementById('twoFactorCode').value;
-
-                try {
-                    const response = await fetch('/api/admin/login', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            username,
-                            password,
-                            twoFactorCode,
-                        }),
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        // Store the token
-                        localStorage.setItem('adminToken', data.token);
-
-                        // Redirect to dashboard
-                        window.location.href = '/admin/';
-                    } else {
-                        throw new Error(data.message || 'Login failed');
-                    }
-                } catch (error) {
-                    const errorMessage = document.getElementById('errorMessage');
-                    errorMessage.textContent = error.message;
-                    errorMessage.style.display = 'block';
-                }
-            });
-        </script>
     </body>
 </html>

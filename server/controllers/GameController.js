@@ -350,7 +350,7 @@ class GameController {
     async spin(req, res) {
         try {
             const { gameId } = req.params;
-            const { sessionId, bet } = req.body;
+            const { sessionId } = req.body;
 
             // Validate session
             const session = await GameSession.findOne({
@@ -375,7 +375,7 @@ class GameController {
     async deal(req, res) {
         try {
             const { gameId } = req.params;
-            const { sessionId, bet } = req.body;
+            const { sessionId } = req.body;
 
             // Validate session
             const session = await GameSession.findOne({
@@ -736,7 +736,6 @@ class GameController {
     async addToFavorites(req, res) {
         try {
             const { gameId } = req.params;
-            const userId = req.user._id;
 
             // Check if game exists
             const game = await Game.findById(gameId);
@@ -761,7 +760,6 @@ class GameController {
     async removeFromFavorites(req, res) {
         try {
             const { gameId } = req.params;
-            const userId = req.user._id;
 
             // Remove from user's favorites
             const user = await req.user.populate('favorites');

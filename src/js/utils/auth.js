@@ -23,53 +23,93 @@ export async function initAuth() {
     }
 }
 
-export async function login({ username, password }) {
+export async function login(username, password) {
     try {
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch('/api/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username, password })
         });
 
         if (!response.ok) {
-            throw new Error('Failed to login');
+            const error = await response.json();
+            throw new Error(error.message || 'Login failed');
         }
 
-        const { user, token } = await response.json();
-        localStorage.setItem('auth_token', token);
-        currentUser = user;
-
-        // Redirect to admin dashboard if user is admin
-        if (user.role === 'admin') {
-            window.location.href = '/admin';
-        }
-
-        return user;
+        const data = await response.json();
+        localStorage.setItem('user', JSON.stringify(data));
+        return data;
     } catch (error) {
-        // Error handling removed to comply with linting rules
-        // TODO: Implement proper error handling
-        throw new Error('Failed to login');
+        console.error('Login error:', error);
+        throw error;
     }
 }
 
-export function logout() {
-    localStorage.removeItem('auth_token');
-    currentUser = null;
-    window.location.href = '/';
+export async function register(username, password, email = null) {
+    try {
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password, email })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Registration failed');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Registration error:', error);
+        throw error;
+    }
 }
 
-export function isAuthenticated() {
-    return !!currentUser;
-}
+export async function logout() {
+    try {
+        const response = await fetch('/api/logout', {
+            method: 'POST'
+        });
 
-export function isAdmin() {
-    return currentUser?.role === 'admin';
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Logout failed');
+        }
+
+        localStorage.removeItem('user');
+    } catch (error) {
+        console.error('Logout error:', error);
+        throw error;
+    }
 }
 
 export function getCurrentUser() {
-    return currentUser;
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+}
+
+export function isAuthenticated() {
+    return getCurrentUser() !== null;
+}
+
+export async function checkAuthStatus() {
+    try {
+        const response = await fetch('/api/user/profile');
+        if (!response.ok) {
+            throw new Error('Not authenticated');
+        }
+        const data = await response.json();
+        localStorage.setItem('user', JSON.stringify(data));
+        return true;
+    } catch (error) {
+        localStorage.removeItem('user');
+        return false;
+    }
 }
 
 // Admin-only functions

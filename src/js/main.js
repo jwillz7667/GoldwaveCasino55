@@ -1,233 +1,147 @@
 import '../css/reset.css';
 import '../css/styles.css';
-import '../css/game-preview.css';
-import { initAuth, isAuthenticated, login, register } from './utils/auth.js';
-import { GameManager } from '../games/GameManager.js';
-import { UserProfile } from './services/UserProfile.js';
-import { PaymentSystem } from './services/PaymentSystem.js';
-import { SlotGame } from '../games/slots/SlotGame.js';
+import { login, register, logout, getCurrentUser, checkAuthStatus } from './utils/auth.js';
 
-// Game data with proper configuration
-const games = {
-    slots: {
-        title: 'Lucky Fortune Slots',
-        image: 'https://via.placeholder.com/300x200/1a1a1a/ffd700?text=Lucky+Fortune+Slots',
-        minBetGold: 100,
-        maxBetGold: 10000,
-        minBetSweep: 0.2,
-        maxBetSweep: 500,
-        maxMultiplier: '5x',
-        provider: 'GOLDWAVE',
-        gameClass: SlotGame,
-        features: [
-            '🃏 Wild Symbol substitutes all regular symbols',
-            '⭐ 3+ Scatters award 10 Free Spins',
-            '🎁 3+ Bonus symbols trigger Bonus Round',
-            '🎲 Multiple winning combinations',
-            '🔄 Auto-spin feature available',
-        ],
-    },
-    // Add more games here
-};
+// DOM Elements
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const logoutBtn = document.getElementById('logoutBtn');
+const userInfo = document.getElementById('userInfo');
+const gamesList = document.getElementById('gamesList');
+const errorMessage = document.getElementById('errorMessage');
 
-class CasinoApp {
-    constructor() {
-        this.gameManager = new GameManager();
-        this.userProfile = new UserProfile();
-        this.paymentSystem = new PaymentSystem();
-        this.currentGame = null;
+// Event Listeners
+if (loginForm) {
+    loginForm.addEventListener('submit', handleLogin);
+}
 
-        this.initializeApp();
-    }
+if (registerForm) {
+    registerForm.addEventListener('submit', handleRegister);
+}
 
-    async initializeApp() {
-        // Initialize authentication
-        await initAuth();
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleLogout);
+}
 
-        // Check authentication status
-        if (isAuthenticated()) {
-            await this.userProfile.loadUserData();
-            this.updateUIForAuthenticatedUser();
-        } else {
-            this.showLoginPrompt();
-        }
+// Authentication Handlers
+async function handleLogin(event) {
+    event.preventDefault();
+    const username = event.target.username.value;
+    const password = event.target.password.value;
 
-        this.setupEventListeners();
-        this.initializeGameCards();
-    }
-
-    setupEventListeners() {
-        // Auth buttons
-        document.querySelector('.login-btn').addEventListener('click', () => this.handleLogin());
-        document
-            .querySelector('.signup-btn')
-            .addEventListener('click', () => this.handleRegister());
-
-        // Game navigation
-        const tabs = document.querySelectorAll('.nav-tabs a');
-        tabs.forEach((tab) => {
-            tab.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.handleTabChange(tab);
-            });
-        });
-
-        // Balance management
-        document
-            .querySelector('.get-coins-btn')
-            .addEventListener('click', () => this.handleGetCoins());
-        document.querySelector('.redeem-btn').addEventListener('click', () => this.handleRedeem());
-    }
-
-    async handleLogin() {
-        try {
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            const user = await login(username, password);
-            this.userProfile.setUser(user);
-            this.updateUIForAuthenticatedUser(user);
-            this.showNotification('Login successful!');
-        } catch (error) {
-            this.showNotification(error.message, 'error');
-        }
-    }
-
-    async handleRegister() {
-        try {
-            const username = document.getElementById('registerUsername').value;
-            const password = document.getElementById('registerPassword').value;
-            const email = document.getElementById('registerEmail').value;
-            
-            const user = await register(username, password, email);
-            this.userProfile.setUser(user);
-            this.updateUIForAuthenticatedUser(user);
-            this.showNotification('Registration successful!');
-        } catch (error) {
-            this.showNotification(error.message, 'error');
-        }
-    }
-
-    async handleGetCoins() {
-        if (!isAuthenticated()) {
-            this.showLoginPrompt();
-            return;
-        }
-
-        try {
-            const amount = await this.paymentSystem.purchaseCoins();
-            await this.userProfile.updateBalance(amount);
-            this.updateBalanceDisplay();
-            this.showNotification(`Successfully added ${amount.toLocaleString()} coins!`);
-        } catch (error) {
-            this.showNotification(error.message, 'error');
-        }
-    }
-
-    async handleRedeem() {
-        if (!isAuthenticated()) {
-            this.showLoginPrompt();
-            return;
-        }
-
-        try {
-            const amount = await this.paymentSystem.redeemCoins();
-            await this.userProfile.updateBalance(-amount);
-            this.updateBalanceDisplay();
-            this.showNotification(`Successfully redeemed ${amount.toLocaleString()} coins!`);
-        } catch (error) {
-            this.showNotification(error.message, 'error');
-        }
-    }
-
-    initializeGameCards() {
-        Object.entries(games).forEach(([gameId, gameData]) => {
-            const card = this.createGameCard(gameId, gameData);
-            document.querySelector('#for-you-section .games-grid').appendChild(card);
-        });
-    }
-
-    createGameCard(gameId, gameData) {
-        const card = document.createElement('div');
-        card.className = 'game-card';
-        card.innerHTML = `
-      <img src="${gameData.image}" alt="${gameData.title}">
-      <div class="game-overlay">
-        <span class="provider">${gameData.provider}</span>
-      </div>
-    `;
-
-        card.addEventListener('click', () => this.handleGameClick(gameId, gameData));
-        return card;
-    }
-
-    async handleGameClick(gameId, gameData) {
-        if (!isAuthenticated()) {
-            this.showLoginPrompt();
-            return;
-        }
-
-        try {
-            const card = document.querySelector(`[data-game="${gameId}"]`);
-            card.classList.add('loading');
-
-            // Initialize the game
-            this.currentGame = new gameData.gameClass({
-                container: 'game-container',
-                userProfile: this.userProfile,
-                paymentSystem: this.paymentSystem,
-                config: gameData,
-            });
-
-            await this.currentGame.initialize();
-            card.classList.remove('loading');
-
-            // Show game container
-            document.getElementById('game-container').scrollIntoView({ behavior: 'smooth' });
-        } catch (error) {
-            this.showNotification(error.message, 'error');
-        }
-    }
-
-    updateUIForAuthenticatedUser() {
-        const userData = this.userProfile.getData();
-        document.querySelector('.coin-amount').textContent = userData.balance.toLocaleString();
-
-        // Update auth buttons
-        document.querySelector('.login-btn').style.display = 'none';
-        document.querySelector('.signup-btn').style.display = 'none';
-
-        // Add user profile button
-        const profileBtn = document.createElement('button');
-        profileBtn.className = 'profile-btn';
-        profileBtn.textContent = userData.username;
-        document.querySelector('.auth-buttons').appendChild(profileBtn);
-    }
-
-    showLoginPrompt() {
-        this.showNotification('Please log in to play games!', 'info');
-        this.handleLogin();
-    }
-
-    showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-    }
-
-    // Modal handling methods
-    showLoginModal() {
-        // Implementation for login modal
-    }
-
-    showRegistrationModal() {
-        // Implementation for registration modal
+    try {
+        await login(username, password);
+        window.location.href = '/casino';
+    } catch (error) {
+        showError(error.message);
     }
 }
 
-// Initialize the casino app when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.casinoApp = new CasinoApp();
-});
+async function handleRegister(event) {
+    event.preventDefault();
+    const username = event.target.username.value;
+    const password = event.target.password.value;
+    const email = event.target.email?.value;
+
+    try {
+        await register(username, password, email);
+        showSuccess('Registration successful! Please log in.');
+        event.target.reset();
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+async function handleLogout() {
+    try {
+        await logout();
+        window.location.href = '/';
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+// UI Functions
+function showError(message) {
+    if (errorMessage) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 5000);
+    }
+}
+
+function showSuccess(message) {
+    if (errorMessage) {
+        errorMessage.textContent = message;
+        errorMessage.style.color = 'green';
+        errorMessage.style.display = 'block';
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+            errorMessage.style.color = 'red';
+        }, 5000);
+    }
+}
+
+// Casino Functions
+async function loadGames() {
+    if (!gamesList) return;
+
+    try {
+        const response = await fetch('/api/games');
+        if (!response.ok) {
+            throw new Error('Failed to load games');
+        }
+
+        const games = await response.json();
+        displayGames(games);
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+function displayGames(games) {
+    if (!gamesList) return;
+
+    gamesList.innerHTML = games.map(game => `
+        <div class="game-card" data-game-id="${game.id}">
+            <img src="${game.thumbnail}" alt="${game.name}" class="game-thumbnail">
+            <h3>${game.name}</h3>
+            <p>Type: ${game.type}</p>
+            <p>Bet Range: ${game.min_bet} - ${game.max_bet}</p>
+            <button onclick="playGame(${game.id})">Play Now</button>
+        </div>
+    `).join('');
+}
+
+function updateUserInfo() {
+    if (!userInfo) return;
+
+    const user = getCurrentUser();
+    if (user) {
+        userInfo.innerHTML = `
+            <span>Welcome, ${user.username}</span>
+            <span>Balance: ${user.balance}</span>
+        `;
+    }
+}
+
+// Initialize
+async function initialize() {
+    const isAuth = await checkAuthStatus();
+    if (window.location.pathname === '/casino' && !isAuth) {
+        window.location.href = '/';
+        return;
+    }
+
+    if (isAuth) {
+        updateUserInfo();
+        if (window.location.pathname === '/casino') {
+            loadGames();
+        }
+    }
+}
+
+// Start the application
+initialize();
