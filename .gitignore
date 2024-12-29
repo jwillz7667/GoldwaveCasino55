@@ -1,10 +1,15 @@
-# Environment variables
+# Environment variables and credentials
 .env
 .env.local
 .env.*.local
 .env.development
 .env.test
 .env.production
+*.creds
+*.credentials
+*.pem
+*.key
+.env.*
 
 # Dependencies
 node_modules/
