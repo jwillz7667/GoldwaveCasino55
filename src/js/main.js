@@ -145,3 +145,79 @@ async function initialize() {
 
 // Start the application
 initialize();
+
+// Navigation Functions
+async function navigateToSection(section) {
+    try {
+        const response = await fetch(`/api/sections/${section}`);
+        if (!response.ok) throw new Error('Failed to load section');
+        const data = await response.json();
+        updateContent(data);
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+// Game Preview Functionality
+function initializeGamePreviews() {
+    const gameThumbnails = document.querySelectorAll('.game-thumbnail');
+    const previewModal = document.getElementById('gamePreviewModal');
+    const closePreviewBtn = document.querySelector('.close-preview');
+    const gameTitle = document.querySelector('.game-title');
+    const gameImage = document.querySelector('.game-preview-image img');
+
+    gameThumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', () => {
+            const gameId = thumbnail.dataset.gameId;
+            const gameName = thumbnail.querySelector('.game-name').textContent;
+            const gameImgSrc = thumbnail.querySelector('img').src;
+            
+            // Update modal content
+            gameTitle.textContent = gameName;
+            gameImage.src = gameImgSrc;
+            
+            // Show modal
+            previewModal.classList.add('active');
+        });
+    });
+
+    // Close modal when clicking the close button
+    closePreviewBtn.addEventListener('click', () => {
+        previewModal.classList.remove('active');
+    });
+
+    // Close modal when clicking outside
+    previewModal.addEventListener('click', (e) => {
+        if (e.target === previewModal) {
+            previewModal.classList.remove('active');
+        }
+    });
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Navigation buttons
+    document.querySelectorAll('.nav-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const section = e.target.dataset.section;
+            navigateToSection(section);
+        });
+    });
+
+    // Social features
+    document.getElementById('socialCasinoBtn')?.addEventListener('click', openSocialCasino);
+    document.getElementById('liveCasinoBtn')?.addEventListener('click', openLiveCasino);
+    document.getElementById('promotionsBtn')?.addEventListener('click', openPromotions);
+
+    // Initialize game previews
+    initializeGamePreviews();
+
+    // Logout functionality
+    document.querySelector('.logout-button')?.addEventListener('click', handleLogout);
+});
+
+// Helper Functions
+function closeModal() {
+    document.querySelector('.modal')?.remove();
+}
+

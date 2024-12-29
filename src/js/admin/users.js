@@ -9,6 +9,7 @@ class UserManagement {
         this.statusFilter = 'all';
 
         this.initializeEventListeners();
+        this.initializeModals();
     }
 
     initializeEventListeners() {
@@ -33,6 +34,43 @@ class UserManagement {
             this.statusFilter = e.target.value;
             this.loadUsers();
         });
+    }
+
+    initializeModals() {
+        // Add modal close handlers
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            const closeButtons = modal.querySelectorAll('.close-modal, .cancel-btn');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => this.hideModal(modal.id));
+            });
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.hideModal(modal.id);
+                }
+            });
+        });
+    }
+
+    hideModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+            // Reset form if it exists
+            const form = modal.querySelector('form');
+            if (form) {
+                form.reset();
+            }
+        }
+    }
+
+    showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'block';
+        }
     }
 
     async loadUsers() {
@@ -141,7 +179,7 @@ class UserManagement {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('adminToken')}`,
+                    'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
                 },
                 body: JSON.stringify({
                     username,
@@ -151,17 +189,18 @@ class UserManagement {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create user');
+                const error = await response.json();
+                throw new Error(error.message);
             }
 
             showNotification('User created successfully');
             document.getElementById('createUserForm').reset();
-            document.getElementById('createUserModal').style.display = 'none';
+            this.hideModal('createUserModal');
 
             // Reload users list
             this.loadUsers();
         } catch (error) {
-            showNotification('Error creating user', 'error');
+            showNotification('Error creating user: ' + error.message, 'error');
         }
     }
 
@@ -264,3 +303,16 @@ document.querySelector('a[href="#users"]').addEventListener('click', () => {
     }
     window.userManagement.loadUsers();
 });
+
+// Export modal functions to global scope for inline button handlers
+window.hideModal = (modalId) => {
+    if (window.userManagement) {
+        window.userManagement.hideModal(modalId);
+    }
+};
+
+window.showModal = (modalId) => {
+    if (window.userManagement) {
+        window.userManagement.showModal(modalId);
+    }
+};

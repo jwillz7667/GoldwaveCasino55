@@ -4,6 +4,7 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const { Pool } = require('pg');
 const session = require('express-session');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const port = 3001;
@@ -36,11 +37,29 @@ const requireAuth = (req, res, next) => {
     }
 };
 
-const requireAdmin = (req, res, next) => {
-    if (req.session.userRole === 'admin' || req.session.userRole === 'superadmin') {
+const requireAdmin = async (req, res, next) => {
+    try {
+        // Check session-based auth first
+        if (req.session.userId && req.session.userRole === 'admin') {
+            return next();
+        }
+
+        // Check token-based auth
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        // Verify JWT token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        if (decoded.role !== 'admin') {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+
         next();
-    } else {
-        res.status(403).json({ message: 'Forbidden' });
+    } catch (error) {
+        console.error('Admin auth error:', error);
+        res.status(401).json({ message: 'Unauthorized' });
     }
 };
 
@@ -59,6 +78,10 @@ app.post('/api/login', async (req, res) => {
 
         if (!validPassword) {
             return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        if (user.status !== 'active') {
+            return res.status(403).json({ message: 'Account is not active' });
         }
 
         req.session.userId = user.id;
@@ -166,8 +189,8 @@ app.post('/api/admin/users', requireAdmin, async (req, res) => {
             
             // Create user
             const result = await client.query(
-                'INSERT INTO users (username, email, password, balance) VALUES ($1, $2, $3, $4) RETURNING *',
-                [username, email || null, hashedPassword, initialBalance]
+                'INSERT INTO users (username, email, password, balance, role, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+                [username, email || null, hashedPassword, initialBalance, 'user', 'active']
             );
             console.log('User created:', result.rows[0]);
             
@@ -216,6 +239,37 @@ app.get('/api/games', requireAuth, async (req, res) => {
     }
 });
 
+// Social Features
+app.get('/api/social/games', requireAuth, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM games WHERE active = true');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Games fetch error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+app.get('/api/live/games', requireAuth, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM games WHERE active = true');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Games fetch error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+app.get('/api/promotions', requireAuth, async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM games WHERE active = true');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Games fetch error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // Admin Routes
 app.get('/api/admin/check-auth', requireAdmin, (req, res) => {
     res.json({ authenticated: true });
@@ -245,6 +299,45 @@ app.get('/api/admin/users', requireAdmin, async (req, res) => {
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({ message: 'Failed to fetch users' });
+    }
+});
+
+// Game Section Routes
+app.get('/api/games/section/:section', requireAuth, async (req, res) => {
+    const { section } = req.params;
+    try {
+        let query = 'SELECT * FROM games WHERE active = true';
+        const params = [];
+
+        switch (section) {
+            case 'popular':
+                query += ' AND popularity > 0 ORDER BY popularity DESC';
+                break;
+            case 'newExclusive':
+                query += ' AND is_exclusive = true ORDER BY created_at DESC';
+                break;
+            case 'spinsWins':
+                query += ' AND type = \'slots\'';
+                break;
+            case 'jackpotPlay':
+                query += ' AND has_jackpot = true';
+                break;
+            case 'holdWin':
+                query += ' AND type = \'hold_and_win\'';
+                break;
+            // forYou section will be handled with user preferences
+            case 'forYou':
+                query += ' AND id IN (SELECT game_id FROM user_preferences WHERE user_id = $1)';
+                params.push(req.session.userId);
+                break;
+            // lobby is default, returns all active games
+        }
+
+        const result = await pool.query(query, params);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error loading games section:', error);
+        res.status(500).json({ message: 'Failed to load games' });
     }
 });
 
